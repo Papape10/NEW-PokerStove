@@ -1,5 +1,7 @@
 package prod.modelo.util;
 
+import prod.modelo.reproductor.ManoReproductor;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.List;
 
 public class LecturaEscritura {
 
@@ -151,5 +154,9 @@ public class LecturaEscritura {
 		}
 		
 		return texto;
+	}
+
+	public static List<ManoReproductor> leeArchivoPokerStars(String rutaAlArchivo) {
+		return null;
 	}
 }

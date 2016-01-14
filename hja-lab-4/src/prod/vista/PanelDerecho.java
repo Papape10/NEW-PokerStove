@@ -5,6 +5,7 @@ import javax.swing.*;
 import prod.controlador.Controlador;
 import prod.controlador.ResultadoSimulacion;
 import prod.modelo.rangos.RangoSoloLectura;
+import prod.modelo.reproductor.EstadoMesa;
 import prod.observadores.I_Observador;
 
 import java.awt.Color;
@@ -262,5 +263,10 @@ public class PanelDerecho extends JPanel implements I_Observador{
 	public void onRankingInsertado(String nuevoRanking) {
 		comboBox.addItem(nuevoRanking);
 		comboBox.updateUI();
+	}
+
+	@Override
+	public void onEstadoMesaCambiado(EstadoMesa nuevoEstado, String nombreAccion) {
+
 	}
 }

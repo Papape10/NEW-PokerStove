@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 import prod.controlador.Controlador;
 import prod.controlador.ResultadoSimulacion;
 import prod.modelo.rangos.RangoSoloLectura;
+import prod.modelo.reproductor.EstadoMesa;
 import prod.observadores.I_Observador;
 
 @SuppressWarnings("serial")
@@ -231,5 +232,10 @@ public class PanelJugadoresHoldem extends JPanel implements I_Observador{
 	public void onRankingInsertado(String nuevoRanking) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void onEstadoMesaCambiado(EstadoMesa nuevoEstado, String nombreAccion) {
+
 	}
 }

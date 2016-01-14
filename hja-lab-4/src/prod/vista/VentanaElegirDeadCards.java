@@ -3,6 +3,7 @@ package prod.vista;
 import prod.controlador.Controlador;
 import prod.controlador.ResultadoSimulacion;
 import prod.modelo.rangos.RangoSoloLectura;
+import prod.modelo.reproductor.EstadoMesa;
 import prod.observadores.I_Observador;
 
 @SuppressWarnings("serial")
@@ -76,6 +77,11 @@ public class VentanaElegirDeadCards extends VentanaElegirCartas implements I_Obs
 	public void onRankingInsertado(String nuevoRanking) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void onEstadoMesaCambiado(EstadoMesa nuevoEstado, String nombreAccion) {
+
 	}
 
 }

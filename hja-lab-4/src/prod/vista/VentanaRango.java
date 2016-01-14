@@ -3,6 +3,7 @@ package prod.vista;
 import prod.controlador.Controlador;
 import prod.controlador.ResultadoSimulacion;
 import prod.modelo.rangos.RangoSoloLectura;
+import prod.modelo.reproductor.EstadoMesa;
 import prod.modelo.util.Constantes;
 import prod.modelo.util.Utilidades;
 import prod.observadores.I_Observador;
@@ -305,6 +306,11 @@ public class VentanaRango extends JFrame implements I_Observador {
 	public void onRankingInsertado(String nuevoRanking) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void onEstadoMesaCambiado(EstadoMesa nuevoEstado, String nombreAccion) {
+
 	}
 
 }

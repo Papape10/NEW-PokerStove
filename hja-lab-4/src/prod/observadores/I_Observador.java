@@ -2,6 +2,7 @@ package prod.observadores;
 
 import prod.controlador.ResultadoSimulacion;
 import prod.modelo.rangos.RangoSoloLectura;
+import prod.modelo.reproductor.EstadoMesa;
 
 /**
  * Interfaz que deben implementar los paneles de la prod.vista correspondiente.
@@ -34,5 +35,7 @@ public interface I_Observador {
 	void onRangoInsertado();
 
 	void onRankingInsertado(String nuevoRanking);
+
+	void onEstadoMesaCambiado(EstadoMesa nuevoEstado, String nombreAccion);
 
 }

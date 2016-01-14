@@ -1,7 +1,9 @@
 package prod.controlador;
 
+import prod.modelo.excepciones.EReproductor;
 import prod.modelo.rangos.*;
 import prod.modelo.rankings.Ranking;
+import prod.modelo.reproductor.Reproductor;
 import prod.modelo.util.Constantes;
 import prod.modelo.util.LecturaEscritura;
 import prod.modelo.util.Utilidades;
@@ -37,6 +39,8 @@ public class Controlador implements I_Observable {
 	private Map<String, Float> rangos;
     private Ranking ranking;
 
+	private Reproductor reproductor;
+
     public Controlador(Map<String, String[]> rankings, Map<String, Float> rangos) {
         this.rankings = rankings;
         this.rangos = rangos;
@@ -61,6 +65,8 @@ public class Controlador implements I_Observable {
         quemadas = "";
         
         observadores = new ArrayList<I_Observador>();
+
+		reproductor = new Reproductor();
     }
     
     public Map<String, String[]> getRankings(){
@@ -114,6 +120,76 @@ public class Controlador implements I_Observable {
             obs.onRangoInsertado();
         }
     }
+
+	/**
+	 * Metodos para el reproductor
+	 */
+
+	public void cargaArchivoAlReproductor(String rutaAlArchivo) {
+		reproductor.cargarArchivo(rutaAlArchivo);
+	}
+
+	public void avanzarAccion() {
+		if (reproductor.puedeAvanzarAccion()) {
+			reproductor.avanzaAccion();
+
+			for (I_Observador obs : observadores) {
+				obs.onEstadoMesaCambiado(reproductor.getEstadoActual(), reproductor.getNombreAccionActual());
+			}
+		} else {
+			throw new EReproductor("No hay mas acciones en la mano.");
+		}
+	}
+
+	public void retrocederAccion() {
+		if (reproductor.puedeRetrocederAccion()) {
+			reproductor.retrocedeAccion();
+
+			for (I_Observador obs : observadores) {
+				obs.onEstadoMesaCambiado(reproductor.getEstadoActual(), reproductor.getNombreAccionActual());
+			}
+		} else {
+			throw new EReproductor("No se puede retroceder mas acciones.");
+		}
+	}
+
+	public void avanzarMano() {
+		if (reproductor.puedeAvanzarMano()) {
+			reproductor.avanzaMano();
+
+			for (I_Observador obs : observadores) {
+				obs.onEstadoMesaCambiado(reproductor.getEstadoActual(), reproductor.getNombreAccionActual());
+			}
+		} else {
+			throw new EReproductor("No hay mas manos en el archivo");
+		}
+	}
+
+	public void retrocederMano() {
+		if (reproductor.puedeRetrocederMano()) {
+			reproductor.retrocedeMano();
+
+			for (I_Observador obs : observadores) {
+				obs.onEstadoMesaCambiado(reproductor.getEstadoActual(), reproductor.getNombreAccionActual());
+			}
+		} else {
+			throw new EReproductor("No se puede retroceder mas manos");
+		}
+	}
+
+	public void resetAcciones() {
+		reproductor.resetAcciones();
+		for (I_Observador obs : observadores) {
+			obs.onEstadoMesaCambiado(reproductor.getEstadoActual(), reproductor.getNombreAccionActual());
+		}
+	}
+
+	public void resetMano() {
+		reproductor.resetMano();
+		for (I_Observador obs : observadores) {
+			obs.onEstadoMesaCambiado(reproductor.getEstadoActual(), reproductor.getNombreAccionActual());
+		}
+	}
 
      /**
      * Metodos para cambiar el prod.modelo desde las vistas

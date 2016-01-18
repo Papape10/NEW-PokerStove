@@ -1,8 +1,6 @@
 package prod.modelo.util;
 
 import prod.baraja.Carta;
-import prod.baraja.E_Carta_Palo;
-import prod.baraja.E_Carta_Valor;
 
 import java.util.ArrayList;
 

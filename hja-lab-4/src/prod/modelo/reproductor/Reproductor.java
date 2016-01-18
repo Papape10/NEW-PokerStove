@@ -4,6 +4,7 @@ import prod.modelo.excepciones.EReproductor;
 import prod.modelo.reproductor.acciones.I_AccionReproductor;
 import prod.modelo.util.LecturaEscritura;
 
+import java.io.File;
 import java.util.List;
 import java.util.Stack;
 
@@ -13,7 +14,6 @@ public class Reproductor {
     private int indiceAccion;
     private List<ManoReproductor> manos;
     private int indiceMano;
-    private String archivo;
 
     /**
      * Constructor vacío, por defecto.
@@ -22,25 +22,15 @@ public class Reproductor {
         iniciaIndices();
         acciones = new Stack<>();
         manos = new Stack<>();
-        archivo = null;
     }
 
     /**
      * Contructor que permite cargar un archivo directamente.
      * @param rutaAlArchivo Path completo al archivo que se va a cargar.
      */
-    public Reproductor(String rutaAlArchivo) {
-        acciones = new Stack<>();
+    public Reproductor(File archivo) {
         iniciaIndices();
-        cargarArchivo(rutaAlArchivo);
-    }
-
-    /**
-     * Cargar un archivo, para que el reproductor tenga
-     * @param rutaAlArchivo Path completo al archivo que se va a cargar.
-     */
-    public void cargarArchivo(String rutaAlArchivo) {
-        archivo = rutaAlArchivo;
+        acciones = new Stack<>();
         manos = LecturaEscritura.leeArchivoPokerStars(archivo);
     }
 
@@ -110,7 +100,7 @@ public class Reproductor {
         indiceAccion = 0;
     }
 
-    public void resetMano() {
+    public void resetManos() {
         indiceMano = 0;
     }
 }

@@ -14,11 +14,8 @@ import prod.baraja.Carta;
 import prod.baraja.E_Carta_Valor;
 import prod.modelo.excepciones.EAnalizador;
 
-
-
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 
@@ -199,7 +196,8 @@ public final class Analizador {
         }
         combinaciones.addAll(combinarCartasDeListas(jugadorHoldem, 2, mesa, 3));
 
-        JugadaValor jugada, mejorJugada = new JugadaValor(E_Jugada_Tipo.NADA, null, null), jugadaAux = mejorJugada;
+        @SuppressWarnings("unused")
+		JugadaValor jugada, mejorJugada = new JugadaValor(E_Jugada_Tipo.NADA, null, null), jugadaAux = mejorJugada;
 
         for (List<Carta> mano : combinaciones) {
             jugada = analizaMano(mano);
@@ -582,7 +580,8 @@ public final class Analizador {
 
 	}
 
-    private static int[][] n_escoge_k_iter(int[] cartas, int k) throws EAnalizador {
+    @SuppressWarnings("unused")
+	private static int[][] n_escoge_k_iter(int[] cartas, int k) throws EAnalizador {
         int[][] result = new int[binomial(cartas.length, k)][k];
 
         if (k > cartas.length) {

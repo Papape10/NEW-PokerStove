@@ -10,6 +10,7 @@ import prod.modelo.util.Utilidades;
 import prod.observadores.I_Observable;
 import prod.observadores.I_Observador;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -125,8 +126,8 @@ public class Controlador implements I_Observable {
 	 * Metodos para el reproductor
 	 */
 
-	public void cargaArchivoAlReproductor(String rutaAlArchivo) {
-		reproductor.cargarArchivo(rutaAlArchivo);
+	public void iniciaReproductor(File archivo) {
+		reproductor = new Reproductor(archivo);
 	}
 
 	public void avanzarAccion() {
@@ -184,8 +185,8 @@ public class Controlador implements I_Observable {
 		}
 	}
 
-	public void resetMano() {
-		reproductor.resetMano();
+	public void resetManos() {
+		reproductor.resetManos();
 		for (I_Observador obs : observadores) {
 			obs.onEstadoMesaCambiado(reproductor.getEstadoActual(), reproductor.getNombreAccionActual());
 		}
@@ -282,7 +283,6 @@ public class Controlador implements I_Observable {
 	public void evaluarHoldem() {
 		boolean todoRandom = true;
 		double t = 0;
-		int cont = 0;
 		int jugadoresRandom = 0;
 		ResultadoSimulacion resultados;
 		

@@ -22,7 +22,7 @@ public class VentanaPrincipal extends JFrame implements I_Observador{
     private JTextArea textAreaAyuda;
     
     public VentanaPrincipal(Controlador controlador) {
-    	 super("Practica 3 HJA");
+    	 super("Practica 4 HJA");
     	 
     	 this.controlador = controlador;
     	 this.controlador.addObservador(this);
@@ -58,11 +58,12 @@ public class VentanaPrincipal extends JFrame implements I_Observador{
 		PanelApartadoOpcional panelOpcional = new PanelApartadoOpcional(controlador);
 		pestanasPanelPrincipal.add("Crear Rankings y Rangos", panelOpcional);
 		
-		textAreaAyuda = new JTextArea();
+		PanelReproductor panelReproductor = new PanelReproductor(controlador);
+		pestanasPanelPrincipal.add("Analyser", panelReproductor);
 		
+		textAreaAyuda = new JTextArea();
 		JScrollPane scrollAyuda = new JScrollPane(textAreaAyuda);
 		scrollAyuda.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
 		textAreaAyuda.setEditable(false);
 		textAreaAyuda.setText(LecturaEscritura.leeAyuda());
 		pestanasPanelPrincipal.add("Ayuda", scrollAyuda);

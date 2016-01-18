@@ -4,7 +4,6 @@ import prod.baraja.Carta;
 import prod.baraja.Deck;
 import prod.modelo.analizador.Analizador;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class RealizarSimulaciones {
@@ -278,9 +277,6 @@ public class RealizarSimulaciones {
         int numCartasQuemadas = cartasDescartadas.size();
 
         int[] ganadores;
-
-        Carta[] cartaEscogida;
-
 
         Deck baraja = new Deck();
         baraja.shuffle();

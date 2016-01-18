@@ -17,6 +17,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -176,6 +177,7 @@ public class LecturaEscritura {
 				reader = new BufferedReader(new FileReader(archivo));
 				// Variables locales
 				int seatDelBoton = 0;
+				int indiceDelBoton = 0;
 				List<String> nombresJugadores = new ArrayList<>();
 				List<Double> stacksJugadores = new ArrayList<>();
 				List<Double> apuestasJugadores = new ArrayList<>();
@@ -185,6 +187,7 @@ public class LecturaEscritura {
 				List<Boolean> hasFolded = new ArrayList<>();
 
 				double pot = 0.0;
+				boolean sigueContadoIndices = true;
 
 				// Bucle de lectura
 				String linea;
@@ -204,12 +207,19 @@ public class LecturaEscritura {
 						cartasEnMesa.clear();
 						hasFolded.clear();
 						pot  = 0;
+						indiceDelBoton = 0;
+						sigueContadoIndices = true;
 					} else if (linea.matches("(.* Seat #\\d is the button)"))  { // Numero de jugadores, seat del button
 						seatDelBoton = parseaSeatDelBoton(linea);
 					} else if (linea.matches("(Seat \\d:.* in chips.\\s*)")){
 						tokens = linea.split(" ");
 						nombresJugadores.add(parseaNombreJugador(linea, tokens));
 						stacksJugadores.add(parseaStackJugador(linea, tokens));
+						if (!haPasadoElIndiceDelBoton(linea, tokens, seatDelBoton) && sigueContadoIndices) {
+							indiceDelBoton++;
+						} else {
+							sigueContadoIndices = false;
+						}
 					} else if (linea.matches("(.* posts small blind .*)")) {
 						tokens = linea.split(" ");
 						for (String i : nombresJugadores) {
@@ -219,14 +229,14 @@ public class LecturaEscritura {
 							hasFolded.add(false);
 						}
 						double ciegaPequena = parseaCiegaPequena(linea, tokens);
-						int seatCiegaPequena = (seatDelBoton + 1) % stacksJugadores.size();
+						int seatCiegaPequena = (indiceDelBoton + 1) % stacksJugadores.size();
 						pot += ciegaPequena;
 						stacksJugadores.set(seatCiegaPequena, stacksJugadores.get(seatCiegaPequena) - ciegaPequena);
 						apuestasJugadores.set(seatCiegaPequena, ciegaPequena);
 					} else if (linea.matches("(.* posts big blind .*)")){
 						tokens = linea.split(" ");
 						double ciegaGrande = parseaCiegaGrande(linea, tokens);
-						int seatCiegaGrande = (seatDelBoton + 2) % stacksJugadores.size();
+						int seatCiegaGrande = (indiceDelBoton + 2) % stacksJugadores.size();
 						pot += ciegaGrande;
 						stacksJugadores.set(seatCiegaGrande, stacksJugadores.get(seatCiegaGrande) - ciegaGrande);
 						apuestasJugadores.set(seatCiegaGrande, ciegaGrande);
@@ -235,7 +245,7 @@ public class LecturaEscritura {
 						nombreHero = parseaNombreHero(linea, tokens);
 						cartasHero = parseaCartasHero(linea, tokens);
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
-														apuestasJugadores, hasFolded, seatDelBoton, nombreHero, cartasHero));
+														apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero));
 					} else if (linea.matches("(.*: raises .*)")) {
 						tokens = linea.split(" ");
 						int iraiser = nombresJugadores.indexOf(tokens[0].substring(0, tokens[0].length()-1));
@@ -244,13 +254,39 @@ public class LecturaEscritura {
 						apuestasJugadores.set(iraiser, apuestasJugadores.get(iraiser) + apuesta);
 						pot += apuesta;
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
-								apuestasJugadores, hasFolded, seatDelBoton, nombreHero, cartasHero));
+								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero));
 					} else if (linea.matches("(.*: folds .*)")) {
 						tokens = linea.split(" ");
 						int ifolded = nombresJugadores.indexOf(tokens[0].substring(0, tokens[0].length()-1));
 						hasFolded.set(ifolded, true);
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
-								apuestasJugadores, hasFolded, seatDelBoton, nombreHero, cartasHero));
+								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero));
+					} else if (linea.matches("(.*: calls .*)")) {
+						tokens = linea.split(" ");
+						int icaller = nombresJugadores.indexOf(tokens[0].substring(0, tokens[0].length()-1));
+						double apuesta = parseaApuestaCall(linea, tokens);
+						stacksJugadores.set(icaller, stacksJugadores.get(icaller) - apuesta);
+						apuestasJugadores.set(icaller, apuestasJugadores.get(icaller) + apuesta);
+						pot += apuesta;
+						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
+								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero));
+					} else if (linea.matches("(.*: checks .*)")) {
+						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
+								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero));
+					}  else if (linea.matches("(.*: bets .*)")) {
+						tokens = linea.split(" ");
+						int ibettor = nombresJugadores.indexOf(tokens[0].substring(0, tokens[0].length()-1));
+						double apuesta = parseaApuestaBet(linea, tokens);
+						stacksJugadores.set(ibettor, stacksJugadores.get(ibettor) - apuesta);
+						apuestasJugadores.set(ibettor, apuestasJugadores.get(ibettor) + apuesta);
+						pot += apuesta;
+						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
+								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero));
+					} else if (linea.matches("(\\** FLOP \\** .([AKQJT2-9][hcsd]\\s*)*.)")) {
+						tokens = linea.split(" ");
+						cartasEnMesa.addAll(parseaCartasFlop(linea, tokens));
+						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
+								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero));
 					} else if (linea.matches("(Uncalled bet \\(.*\\) returned to .*)")) {
 						tokens = linea.split(" ");
 						int iganador = nombresJugadores.indexOf(tokens[tokens.length - 1]);
@@ -266,7 +302,7 @@ public class LecturaEscritura {
 						}
 						pot = 0;
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
-								apuestasJugadores, hasFolded, seatDelBoton, nombreHero, cartasHero));
+								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero));
 					}
 				}
 				reader.close();
@@ -280,6 +316,26 @@ public class LecturaEscritura {
 		}
 
 		return manos;
+	}
+
+	private static double parseaApuestaBet(String linea, String[] tokens) {
+		return Double.parseDouble(tokens[2].substring(3));
+	}
+
+	private static List<Carta> parseaCartasFlop(String linea, String[] tokens) {
+		List<Carta> res = new ArrayList<>();
+		res.add(new Carta(tokens[3].substring(1, 3)));
+		res.add(new Carta(tokens[4]));
+		res.add(new Carta(tokens[5].substring(0, 2)));
+		return res;
+	}
+
+	private static boolean haPasadoElIndiceDelBoton(String linea, String[] tokens, int seatBoton) {
+		return (seatBoton < Integer.parseInt(tokens[1].substring(0,1)));
+	}
+
+	private static double parseaApuestaCall(String linea, String[] tokens) {
+		return Double.parseDouble(tokens[2].substring(3));
 	}
 
 	private static AccionReproductor construyeAccion(String linea,

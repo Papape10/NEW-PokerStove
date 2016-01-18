@@ -139,7 +139,9 @@ public class LecturaEscrituraTest {
 
         ArrayList<Carta> cartashero = new ArrayList<>();
         cartashero.add(new Carta("2h"));
-        cartashero.add(new Carta("Ks"));
+        cartashero.add(new Carta("7c"));
+
+        ArrayList<Carta> cartasmesa = new ArrayList<>();
 
         // Estado inicial
         List<EstadoJugador> jugadores = new ArrayList<>();
@@ -152,10 +154,161 @@ public class LecturaEscrituraTest {
         //Primera accion leida correctamente
         accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.03, null), "Dealt to MN-UCM [2h 7c]"));
 
+        // kastaracing: calls 0.02
+        jugadores.clear();
+        jugadores.add(new EstadoJugador("eljudas888", null, 1.98, 0.02, false, false));
+        jugadores.add(new EstadoJugador("kastaracing", null, 1.42, 0.02, false, false));
+        jugadores.add(new EstadoJugador("rosaenithsa", null, 0.81, 0, false, false));
+        jugadores.add(new EstadoJugador("edgarbermejo", null, 1.44, 0.0, false, true));
+        jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.77, 0.01, false, false));
+
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.05, null), "kastaracing: calls â‚¬0.02"));
+
+        // rosaenitsha: calls 0.02
+        jugadores.clear();
+        jugadores.add(new EstadoJugador("eljudas888", null, 1.98, 0.02, false, false));
+        jugadores.add(new EstadoJugador("kastaracing", null, 1.42, 0.02, false, false));
+        jugadores.add(new EstadoJugador("rosaenithsa", null, 0.79, 0.02, false, false));
+        jugadores.add(new EstadoJugador("edgarbermejo", null, 1.44, 0.0, false, true));
+        jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.77, 0.01, false, false));
+
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.07, null), "rosaenithsa: calls â‚¬0.02"));
+
+        // edgarbermejo: raises 0.09 to 0.11
+        jugadores.clear();
+        jugadores.add(new EstadoJugador("eljudas888", null, 1.98, 0.02, false, false));
+        jugadores.add(new EstadoJugador("kastaracing", null, 1.42, 0.02, false, false));
+        jugadores.add(new EstadoJugador("rosaenithsa", null, 0.79, 0.02, false, false));
+        jugadores.add(new EstadoJugador("edgarbermejo", null, 1.3299999999999998, 0.11, false, true));
+        jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.77, 0.01, false, false));
+
+        //Primera accion leida correctamente
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.18, null), "edgarbermejo: raises â‚¬0.09 to â‚¬0.11"));
+
+        // MN-UCM: folds
+        jugadores.clear();
+        jugadores.add(new EstadoJugador("eljudas888", null, 1.98, 0.02, false, false));
+        jugadores.add(new EstadoJugador("kastaracing", null, 1.42, 0.02, false, false));
+        jugadores.add(new EstadoJugador("rosaenithsa", null, 0.79, 0.02, false, false));
+        jugadores.add(new EstadoJugador("edgarbermejo", null, 1.3299999999999998, 0.11, false, true));
+        jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.77, 0.01, true, false));
+
+        //Primera accion leida correctamente
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.18, null), "MN-UCM: folds "));
+
+        // eljudas: calls 0.09
+        jugadores.clear();
+        jugadores.add(new EstadoJugador("eljudas888", null, 1.89, 0.11, false, false));
+        jugadores.add(new EstadoJugador("kastaracing", null, 1.42, 0.02, false, false));
+        jugadores.add(new EstadoJugador("rosaenithsa", null, 0.79, 0.02, false, false));
+        jugadores.add(new EstadoJugador("edgarbermejo", null, 1.3299999999999998, 0.11, false, true));
+        jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.77, 0.01, true, false));
+
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.27, null), "eljudas888: calls â‚¬0.09"));
+
+        // kastaracing: calls 0.09
+        jugadores.clear();
+        jugadores.add(new EstadoJugador("eljudas888", null, 1.89, 0.11, false, false));
+        jugadores.add(new EstadoJugador("kastaracing", null, 1.3299999999999998, 0.11, false, false));
+        jugadores.add(new EstadoJugador("rosaenithsa", null, 0.79, 0.02, false, false));
+        jugadores.add(new EstadoJugador("edgarbermejo", null, 1.3299999999999998, 0.11, false, true));
+        jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.77, 0.01, true, false));
+
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.36, null), "kastaracing: calls â‚¬0.09"));
+
+        // rosaenithsa: folds
+        jugadores.clear();
+        jugadores.add(new EstadoJugador("eljudas888", null, 1.89, 0.11, false, false));
+        jugadores.add(new EstadoJugador("kastaracing", null, 1.3299999999999998, 0.11, false, false));
+        jugadores.add(new EstadoJugador("rosaenithsa", null, 0.79, 0.02, true, false));
+        jugadores.add(new EstadoJugador("edgarbermejo", null, 1.3299999999999998, 0.11, false, true));
+        jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.77, 0.01, true, false));
+
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.36, null), "rosaenithsa: folds "));
+
+        // *** FLOP *** [4c 7s Ks]
+        jugadores.clear();
+        jugadores.add(new EstadoJugador("eljudas888", null, 1.89, 0.11, false, false));
+        jugadores.add(new EstadoJugador("kastaracing", null, 1.3299999999999998, 0.11, false, false));
+        jugadores.add(new EstadoJugador("rosaenithsa", null, 0.79, 0.02, true, false));
+        jugadores.add(new EstadoJugador("edgarbermejo", null, 1.3299999999999998, 0.11, false, true));
+        jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.77, 0.01, true, false));
+
+        cartasmesa.add(new Carta("4c"));
+        cartasmesa.add(new Carta("7s"));
+        cartasmesa.add(new Carta("Ks"));
+
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.36, cartasmesa), "*** FLOP *** [4c 7s Ks]"));
+
+        // eljufas888: checks
+        jugadores.clear();
+        jugadores.add(new EstadoJugador("eljudas888", null, 1.89, 0.11, false, false));
+        jugadores.add(new EstadoJugador("kastaracing", null, 1.3299999999999998, 0.11, false, false));
+        jugadores.add(new EstadoJugador("rosaenithsa", null, 0.79, 0.02, true, false));
+        jugadores.add(new EstadoJugador("edgarbermejo", null, 1.3299999999999998, 0.11, false, true));
+        jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.77, 0.01, true, false));
+
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.36, cartasmesa), "eljudas888: checks "));
+
+        // kastaracing: checks
+        jugadores.clear();
+        jugadores.add(new EstadoJugador("eljudas888", null, 1.89, 0.11, false, false));
+        jugadores.add(new EstadoJugador("kastaracing", null, 1.3299999999999998, 0.11, false, false));
+        jugadores.add(new EstadoJugador("rosaenithsa", null, 0.79, 0.02, true, false));
+        jugadores.add(new EstadoJugador("edgarbermejo", null, 1.3299999999999998, 0.11, false, true));
+        jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.77, 0.01, true, false));
+
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.36, cartasmesa), "kastaracing: checks "));
+
+        // edgarbermejo: bets 0.18
+        jugadores.clear();
+        jugadores.add(new EstadoJugador("eljudas888", null, 1.89, 0.11, false, false));
+        jugadores.add(new EstadoJugador("kastaracing", null, 1.3299999999999998, 0.11, false, false));
+        jugadores.add(new EstadoJugador("rosaenithsa", null, 0.79, 0.02, true, false));
+        jugadores.add(new EstadoJugador("edgarbermejo", null, 1.15, 0.29, false, true));
+        jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.77, 0.01, true, false));
+
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.54, cartasmesa), "edgarbermejo: bets â‚¬0.18"));
+
+        // eljudas888: folds
+        jugadores.clear();
+        jugadores.add(new EstadoJugador("eljudas888", null, 1.89, 0.11, true, false));
+        jugadores.add(new EstadoJugador("kastaracing", null, 1.3299999999999998, 0.11, false, false));
+        jugadores.add(new EstadoJugador("rosaenithsa", null, 0.79, 0.02, true, false));
+        jugadores.add(new EstadoJugador("edgarbermejo", null, 1.15, 0.29, false, true));
+        jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.77, 0.01, true, false));
+
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.54, cartasmesa), "eljudas888: folds "));
+
+        // kastaracing: folds
+        jugadores.clear();
+        jugadores.add(new EstadoJugador("eljudas888", null, 1.89, 0.11, true, false));
+        jugadores.add(new EstadoJugador("kastaracing", null, 1.3299999999999998, 0.11, true, false));
+        jugadores.add(new EstadoJugador("rosaenithsa", null, 0.79, 0.02, true, false));
+        jugadores.add(new EstadoJugador("edgarbermejo", null, 1.15, 0.29, false, true));
+        jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.77, 0.01, true, false));
+
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.54, cartasmesa), "kastaracing: folds "));
+
+        // kastaracing: folds
+        jugadores.clear();
+        jugadores.add(new EstadoJugador("eljudas888", null, 1.89, 0, true, false));
+        jugadores.add(new EstadoJugador("kastaracing", null, 1.3299999999999998, 0, true, false));
+        jugadores.add(new EstadoJugador("rosaenithsa", null, 0.79, 0, true, false));
+        jugadores.add(new EstadoJugador("edgarbermejo", null, 1.6799999999999997, 0, false, true));
+        jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.77, 0, true, false));
+
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0, cartasmesa), "edgarbermejo collected â‚¬0.35 from pot"));
+
+        for (int i = 0; i < accionesEsperadas.size(); i++) {
+            assertEquals("No se ha parseado la accion correctamente", accionesEsperadas.get(i), resultado.get(0).getAcciones().get(i));
+        }
     }
 
     @Test
     public void testLeeArchivoPokerStarsUnaManoFlopTurnRiver() {
+
+
 
     }
 }

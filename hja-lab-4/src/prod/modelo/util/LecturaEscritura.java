@@ -17,7 +17,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -185,6 +184,8 @@ public class LecturaEscritura {
 				List<Carta> cartasHero = new ArrayList<>();
 				List<Carta> cartasEnMesa = new ArrayList<>();
 				List<Boolean> hasFolded = new ArrayList<>();
+				
+				List<List<Carta>> cartasJugadores = new ArrayList<>();
 
 				double pot = 0.0;
 				boolean sigueContadoIndices = true;
@@ -209,6 +210,7 @@ public class LecturaEscritura {
 						pot  = 0;
 						indiceDelBoton = 0;
 						sigueContadoIndices = true;
+						cartasJugadores.clear();
 					} else if (linea.matches("(.* Seat #\\d is the button)"))  { // Numero de jugadores, seat del button
 						seatDelBoton = parseaSeatDelBoton(linea);
 					} else if (linea.matches("(Seat \\d:.* in chips.\\s*)")){
@@ -228,6 +230,12 @@ public class LecturaEscritura {
 						for (String i : nombresJugadores) {
 							hasFolded.add(false);
 						}
+						for (String i : nombresJugadores) {
+							cartasJugadores.add(new ArrayList<Carta>());
+						}
+						for (int i = 0; i < cartasJugadores.size(); i++) {
+							cartasJugadores.set(i, null);
+						}
 						double ciegaPequena = parseaCiegaPequena(linea, tokens);
 						int seatCiegaPequena = (indiceDelBoton + 1) % stacksJugadores.size();
 						pot += ciegaPequena;
@@ -245,7 +253,7 @@ public class LecturaEscritura {
 						nombreHero = parseaNombreHero(linea, tokens);
 						cartasHero = parseaCartasHero(linea, tokens);
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
-														apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero));
+														apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
 					} else if (linea.matches("(.*: raises .*)")) {
 						tokens = linea.split(" ");
 						int iraiser = nombresJugadores.indexOf(tokens[0].substring(0, tokens[0].length()-1));
@@ -254,13 +262,13 @@ public class LecturaEscritura {
 						apuestasJugadores.set(iraiser, apuestasJugadores.get(iraiser) + apuesta);
 						pot += apuesta;
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
-								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero));
+								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
 					} else if (linea.matches("(.*: folds .*)")) {
 						tokens = linea.split(" ");
 						int ifolded = nombresJugadores.indexOf(tokens[0].substring(0, tokens[0].length()-1));
 						hasFolded.set(ifolded, true);
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
-								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero));
+								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
 					} else if (linea.matches("(.*: calls .*)")) {
 						tokens = linea.split(" ");
 						int icaller = nombresJugadores.indexOf(tokens[0].substring(0, tokens[0].length()-1));
@@ -269,10 +277,10 @@ public class LecturaEscritura {
 						apuestasJugadores.set(icaller, apuestasJugadores.get(icaller) + apuesta);
 						pot += apuesta;
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
-								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero));
+								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
 					} else if (linea.matches("(.*: checks .*)")) {
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
-								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero));
+								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
 					}  else if (linea.matches("(.*: bets .*)")) {
 						tokens = linea.split(" ");
 						int ibettor = nombresJugadores.indexOf(tokens[0].substring(0, tokens[0].length()-1));
@@ -281,12 +289,28 @@ public class LecturaEscritura {
 						apuestasJugadores.set(ibettor, apuestasJugadores.get(ibettor) + apuesta);
 						pot += apuesta;
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
-								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero));
-					} else if (linea.matches("(\\** FLOP \\** .([AKQJT2-9][hcsd]\\s*)*.)")) {
+								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
+					} else if (linea.matches("(.*: shows .([AKQJT2-9][hsdc]\\s*){2}.*)")) {
+						tokens = linea.split(" ");
+						int ishower = nombresJugadores.indexOf(tokens[0].substring(0, tokens[0].length()-1));
+						cartasJugadores.set(ishower, parseaCartasShower(linea, tokens));
+						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
+								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
+ 					} else if (linea.matches("(\\** FLOP \\** .([AKQJT2-9][hcsd]\\s*)*.)")) {
 						tokens = linea.split(" ");
 						cartasEnMesa.addAll(parseaCartasFlop(linea, tokens));
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
-								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero));
+								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
+					} else if (linea.matches("(\\** TURN \\** .([AKQJT2-9][hcsd]\\s*)*.\\s.([AKQJT2-9][hcsd])*.)")) {
+						tokens = linea.split(" ");
+						cartasEnMesa.add(parseaCartaTurn(linea, tokens));
+						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
+								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
+					} else if (linea.matches("(\\** RIVER \\** .([AKQJT2-9][hcsd]\\s*)*.\\s.([AKQJT2-9][hcsd])*.)")) {
+						tokens = linea.split(" ");
+						cartasEnMesa.add(parseaCartaRiver(linea, tokens));
+						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
+								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
 					} else if (linea.matches("(Uncalled bet \\(.*\\) returned to .*)")) {
 						tokens = linea.split(" ");
 						int iganador = nombresJugadores.indexOf(tokens[tokens.length - 1]);
@@ -302,7 +326,7 @@ public class LecturaEscritura {
 						}
 						pot = 0;
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
-								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero));
+								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
 					}
 				}
 				reader.close();
@@ -316,6 +340,54 @@ public class LecturaEscritura {
 		}
 
 		return manos;
+	}
+
+	private static AccionReproductor construyeAccion(String linea,
+													 double pot,
+													 List<Carta> cartasEnMesa,
+													 List<String> nombresJugadores,
+													 List<Double> stacksJugadores,
+													 List<Double> apuestasJugadores,
+													 List<Boolean> hasFolded,
+													 int seatButton,
+													 String nombreHero,
+													 List<Carta> cartasHero, List<List<Carta>> cartasJugadores) {
+
+		List<EstadoJugador> estadosJugadores = new ArrayList<>();
+		boolean isHero, isButton;
+		for (int i = 0; i < nombresJugadores.size(); i++) {
+			isHero = (nombresJugadores.get(i).equals(nombreHero));
+			isButton = (i == seatButton);
+
+			estadosJugadores.add(new EstadoJugador(nombresJugadores.get(i),
+													(isHero ? new ArrayList<Carta>(cartasHero) : cartasJugadores.get(i)),
+													stacksJugadores.get(i),
+													apuestasJugadores.get(i),
+													hasFolded.get(i),
+													isButton));
+
+		}
+
+		EstadoMesa estadoMesa = new EstadoMesa(estadosJugadores, pot, (cartasEnMesa.size() > 0 ? new ArrayList<>(cartasEnMesa) : null));
+		AccionReproductor accion = new AccionReproductor(estadoMesa, linea);
+
+		return accion;
+	}
+
+
+	private static List<Carta> parseaCartasShower(String linea, String[] tokens) {
+		List<Carta> res = new ArrayList<>();
+		res.add(new Carta(tokens[2].substring(1, 3)));
+		res.add(new Carta(tokens[3].substring(0, 2)));
+		return res;
+	}
+
+	private static Carta parseaCartaRiver(String linea, String[] tokens) {
+		return new Carta(tokens[7].substring(1, 4));
+	}
+
+	private static Carta parseaCartaTurn(String linea, String[] tokens) {
+		return new Carta(tokens[6].substring(1, 4));
 	}
 
 	private static double parseaApuestaBet(String linea, String[] tokens) {
@@ -338,37 +410,6 @@ public class LecturaEscritura {
 		return Double.parseDouble(tokens[2].substring(3));
 	}
 
-	private static AccionReproductor construyeAccion(String linea,
-													 double pot,
-													 List<Carta> cartasEnMesa,
-													 List<String> nombresJugadores,
-													 List<Double> stacksJugadores,
-													 List<Double> apuestasJugadores,
-													 List<Boolean> hasFolded,
-													 int seatButton,
-													 String nombreHero,
-													 List<Carta> cartasHero) {
-
-		List<EstadoJugador> estadosJugadores = new ArrayList<>();
-		boolean isHero, isButton;
-		for (int i = 0; i < nombresJugadores.size(); i++) {
-			isHero = (nombresJugadores.get(i).equals(nombreHero));
-			isButton = (i == seatButton);
-
-			estadosJugadores.add(new EstadoJugador(nombresJugadores.get(i),
-													(isHero ? new ArrayList<Carta>(cartasHero) : null),
-													stacksJugadores.get(i),
-													apuestasJugadores.get(i),
-													hasFolded.get(i),
-													isButton));
-
-		}
-
-		EstadoMesa estadoMesa = new EstadoMesa(estadosJugadores, pot, (cartasEnMesa.size() > 0 ? new ArrayList<>(cartasEnMesa) : null));
-		AccionReproductor accion = new AccionReproductor(estadoMesa, linea);
-
-		return accion;
-	}
 
 	private static List<Carta> parseaCartasHero(String linea, String[] tokens) {
 		List<Carta> res = new ArrayList<>(2);

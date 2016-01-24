@@ -39,7 +39,7 @@ public class LecturaEscrituraTest {
         jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.78, 0.02, false, false));
 
         //Primera accion leida correctamente
-        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.03, null), "Dealt to MN-UCM [9h Ks]"));
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.03, null), "\nDealt to MN-UCM [9h Ks]"));
 
         // eljudas888 raises 0.04 to 0.06
         jugadores.clear();
@@ -114,6 +114,21 @@ public class LecturaEscrituraTest {
         // eljudas888 collected 0.05 from pot
         jugadores.clear();
         cartashero.clear();
+        jugadores.add(new EstadoJugador("eljudas888", null, 1.95, 0.0, false, false));
+        jugadores.add(new EstadoJugador("kastaracing", null, 1.44, 0, true, false));
+        jugadores.add(new EstadoJugador("rosaenithsa", null, 0.81, 0, true, true));
+        jugadores.add(new EstadoJugador("edgarbermejo", null, 1.44, 0, true, false));
+        cartashero.add(new Carta("9h"));
+        cartashero.add(new Carta("Ks"));
+        jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.78, 0, true, false));
+
+        //Primera accion leida correctamente
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.13999999999999999, null), "Uncalled bet (â‚¬0.04) returned to eljudas888"));
+
+
+        // eljudas888 collected 0.05 from pot
+        jugadores.clear();
+        cartashero.clear();
         jugadores.add(new EstadoJugador("eljudas888", null, 2, 0.0, false, false));
         jugadores.add(new EstadoJugador("kastaracing", null, 1.44, 0, true, false));
         jugadores.add(new EstadoJugador("rosaenithsa", null, 0.81, 0, true, true));
@@ -152,7 +167,7 @@ public class LecturaEscrituraTest {
         jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.77, 0.01, false, false));
 
         //Primera accion leida correctamente
-        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.03, null), "Dealt to MN-UCM [2h 7c]"));
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.03, null), "\nDealt to MN-UCM [2h 7c]"));
 
         // kastaracing: calls 0.02
         jugadores.clear();
@@ -295,6 +310,18 @@ public class LecturaEscrituraTest {
         jugadores.add(new EstadoJugador("eljudas888", null, 1.89, 0, true, false));
         jugadores.add(new EstadoJugador("kastaracing", null, 1.3299999999999998, 0, true, false));
         jugadores.add(new EstadoJugador("rosaenithsa", null, 0.79, 0, true, false));
+        jugadores.add(new EstadoJugador("edgarbermejo", null, 1.3299999999999998, 0, false, true));
+        jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.77, 0, true, false));
+
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.9, cartasmesa), "Uncalled bet (â‚¬0.18) returned to edgarbermejo"));
+
+
+
+        // kastaracing: folds
+        jugadores.clear();
+        jugadores.add(new EstadoJugador("eljudas888", null, 1.89, 0, true, false));
+        jugadores.add(new EstadoJugador("kastaracing", null, 1.3299999999999998, 0, true, false));
+        jugadores.add(new EstadoJugador("rosaenithsa", null, 0.79, 0, true, false));
         jugadores.add(new EstadoJugador("edgarbermejo", null, 1.6799999999999997, 0, false, true));
         jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.77, 0, true, false));
 
@@ -308,7 +335,7 @@ public class LecturaEscrituraTest {
     @Test
     public void testLeeArchivoPokerStarsUnaManoFlopTurnRiver() {
 
-        List<ManoReproductor> resultado = LecturaEscritura.leeArchivoPokerStars(new File("src/archivos/manos/manoTestMuchasUnaManoFlopTurnRiver.txt"));
+        List<ManoReproductor> resultado = LecturaEscritura.leeArchivoPokerStars(new File("src/archivos/manos/manoTestUnaManoFlopTurnRiver.txt"));
 
         List<I_AccionReproductor> accionesEsperadas = new ArrayList<>();
 
@@ -326,7 +353,7 @@ public class LecturaEscrituraTest {
         jugadores.add(new EstadoJugador("edgarbermejo", null, 1.50, 0.01, false, false));
         jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.75, 0.02, false, false));
 
-        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.03, null), "Dealt to MN-UCM [4c 7h]"));
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.03, null), "\nDealt to MN-UCM [4c 7h]"));
 
         // eljudas888: folds
         jugadores.clear();
@@ -528,6 +555,17 @@ public class LecturaEscrituraTest {
         accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.19999999999999996,
                 new ArrayList<Carta>(cartasmesa)), "edgarbermejo: calls â‚¬0.02"));
 
+        // edgarbermejo: calls €0.02
+        jugadores.clear();
+        jugadores.add(new EstadoJugador("eljudas888", null, 2.43, 0, true, false));
+        jugadores.add(new EstadoJugador("kastaracing", null, 0.8799999999999999, 0.06, false, false));
+        jugadores.add(new EstadoJugador("rosaenithsa", null, 0.70, 0.06, false, true));
+        jugadores.add(new EstadoJugador("edgarbermejo", null, 1.45, 0.06, false, false));
+        jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.75, 0.02, true, false));
+
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.19999999999999996,
+                new ArrayList<Carta>(cartasmesa)), "*** SHOW DOWN ***"));
+
         //  kastaracing: shows [7d 8h] (three of a kind, Sevens)
         List<Carta> cartaskastaracing = new ArrayList<>();
         cartaskastaracing.add(new Carta("7d"));
@@ -559,6 +597,33 @@ public class LecturaEscrituraTest {
             assertEquals("No se ha parseado la accion correctamente", accionesEsperadas.get(i), resultado.get(0).getAcciones().get(i));
         }
 
+    }
+
+    @Test
+    public void testLeeArchivoPokerStarsNombreCompuesto() {
+
+        List<ManoReproductor> resultado = LecturaEscritura.leeArchivoPokerStars(new File("src/archivos/manos/manoTestNombreCompuesto.txt"));
+
+        List<I_AccionReproductor> accionesEsperadas = new ArrayList<>();
+
+        ArrayList<Carta> cartashero = new ArrayList<>();
+        cartashero.add(new Carta("Jc"));
+        cartashero.add(new Carta("Th"));
+
+
+        // Estado inicial
+        List<EstadoJugador> jugadores = new ArrayList<>();
+        jugadores.add(new EstadoJugador("desfasii", null, 2.01, 0.02, false, false));
+        jugadores.add(new EstadoJugador("lunasa", null, 2.11, 0, false, false));
+        jugadores.add(new EstadoJugador("ChÃºck Norris", null, 1.97, 0, false, true));
+        jugadores.add(new EstadoJugador("MN-UCM", new ArrayList<Carta>(cartashero), 0.77, 0.01, false, false));
+
+        accionesEsperadas.add(new AccionReproductor(new EstadoMesa(new ArrayList<EstadoJugador>(jugadores), 0.03, null), "\nDealt to MN-UCM [Jc Th]"));
+
+
+        for (int i = 0; i < accionesEsperadas.size(); i++) {
+            assertEquals("No se ha parseado la accion correctamente", accionesEsperadas.get(i), resultado.get(0).getAcciones().get(i));
+        }
 
     }
 }

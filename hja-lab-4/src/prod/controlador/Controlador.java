@@ -1,6 +1,5 @@
 package prod.controlador;
 
-import prod.modelo.excepciones.EReproductor;
 import prod.modelo.rangos.*;
 import prod.modelo.rankings.Ranking;
 import prod.modelo.reproductor.Reproductor;
@@ -14,6 +13,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.JOptionPane;
 
 import prod.baraja.Carta;
 
@@ -138,7 +139,8 @@ public class Controlador implements I_Observable {
 				obs.onEstadoMesaCambiado(reproductor.getEstadoActual(), reproductor.getNombreAccionActual());
 			}
 		} else {
-			throw new EReproductor("No hay mas acciones en la mano.");
+			JOptionPane.showMessageDialog(null, "No hay mas acciones en la mano.",
+					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -150,7 +152,8 @@ public class Controlador implements I_Observable {
 				obs.onEstadoMesaCambiado(reproductor.getEstadoActual(), reproductor.getNombreAccionActual());
 			}
 		} else {
-			throw new EReproductor("No se puede retroceder mas acciones.");
+			JOptionPane.showMessageDialog(null, "No se puede retroceder mas acciones.",
+					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -162,7 +165,8 @@ public class Controlador implements I_Observable {
 				obs.onEstadoMesaCambiado(reproductor.getEstadoActual(), reproductor.getNombreAccionActual());
 			}
 		} else {
-			throw new EReproductor("No hay mas manos en el archivo");
+			JOptionPane.showMessageDialog(null, "No hay mas manos en el archivo.",
+					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -174,7 +178,8 @@ public class Controlador implements I_Observable {
 				obs.onEstadoMesaCambiado(reproductor.getEstadoActual(), reproductor.getNombreAccionActual());
 			}
 		} else {
-			throw new EReproductor("No se puede retroceder mas manos");
+			JOptionPane.showMessageDialog(null, "No se puede retroceder mas manos.",
+					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

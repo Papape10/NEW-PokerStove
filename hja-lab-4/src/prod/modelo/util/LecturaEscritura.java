@@ -16,6 +16,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -238,44 +240,44 @@ public class LecturaEscritura {
 						}
 						double ciegaPequena = parseaCiegaPequena(linea, tokens);
 						int seatCiegaPequena = (indiceDelBoton + 1) % stacksJugadores.size();
-						pot += ciegaPequena;
 						stacksJugadores.set(seatCiegaPequena, stacksJugadores.get(seatCiegaPequena) - ciegaPequena);
 						apuestasJugadores.set(seatCiegaPequena, ciegaPequena);
+						pot += ciegaPequena;
 					} else if (linea.matches("(.* posts big blind .*)")){
 						tokens = linea.split(" ");
 						double ciegaGrande = parseaCiegaGrande(linea, tokens);
 						int seatCiegaGrande = (indiceDelBoton + 2) % stacksJugadores.size();
-						pot += ciegaGrande;
 						stacksJugadores.set(seatCiegaGrande, stacksJugadores.get(seatCiegaGrande) - ciegaGrande);
 						apuestasJugadores.set(seatCiegaGrande, ciegaGrande);
+						pot += ciegaGrande;
 					} else if (linea.matches("(Dealt to .*\\s[\\[][AKQJT2-9][hscd] [AKQJT2-9][hscd].)")) {
 						tokens = linea.split(" ");
 						nombreHero = parseaNombreHero(linea, tokens);
 						cartasHero = parseaCartasHero(linea, tokens);
-						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
+						acciones.add(construyeAccion('\n' + linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
 														apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
 					} else if (linea.matches("(.*: raises .*)")) {
 						tokens = linea.split(" ");
-						int iraiser = nombresJugadores.indexOf(tokens[0].substring(0, tokens[0].length()-1));
+						int iraiser = nombresJugadores.indexOf(pareseaNombreApuesta(linea, tokens));
 						double apuesta = parseaApuestaRaise(linea, tokens);
-						stacksJugadores.set(iraiser, stacksJugadores.get(iraiser) - apuesta);
-						apuestasJugadores.set(iraiser, apuestasJugadores.get(iraiser) + apuesta);
+						stacksJugadores.set(iraiser, stacksJugadores.get(iraiser) - (apuesta - apuestasJugadores.get(iraiser)));
+						apuestasJugadores.set(iraiser, apuesta);
 						pot += apuesta;
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
 								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
 					} else if (linea.matches("(.*: folds .*)")) {
 						tokens = linea.split(" ");
-						int ifolded = nombresJugadores.indexOf(tokens[0].substring(0, tokens[0].length()-1));
+						int ifolded = nombresJugadores.indexOf(pareseaNombreApuesta(linea, tokens));
 						hasFolded.set(ifolded, true);
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
 								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
 					} else if (linea.matches("(.*: calls .*)")) {
 						tokens = linea.split(" ");
-						int icaller = nombresJugadores.indexOf(tokens[0].substring(0, tokens[0].length()-1));
+						int icaller = nombresJugadores.indexOf(pareseaNombreApuesta(linea, tokens));
 						double apuesta = parseaApuestaCall(linea, tokens);
+						pot += apuesta;
 						stacksJugadores.set(icaller, stacksJugadores.get(icaller) - apuesta);
 						apuestasJugadores.set(icaller, apuestasJugadores.get(icaller) + apuesta);
-						pot += apuesta;
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
 								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
 					} else if (linea.matches("(.*: checks .*)")) {
@@ -283,16 +285,16 @@ public class LecturaEscritura {
 								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
 					}  else if (linea.matches("(.*: bets .*)")) {
 						tokens = linea.split(" ");
-						int ibettor = nombresJugadores.indexOf(tokens[0].substring(0, tokens[0].length()-1));
+						int ibettor = nombresJugadores.indexOf(pareseaNombreApuesta(linea, tokens));
 						double apuesta = parseaApuestaBet(linea, tokens);
+						pot += apuesta;
 						stacksJugadores.set(ibettor, stacksJugadores.get(ibettor) - apuesta);
 						apuestasJugadores.set(ibettor, apuestasJugadores.get(ibettor) + apuesta);
-						pot += apuesta;
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
 								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
 					} else if (linea.matches("(.*: shows .([AKQJT2-9][hsdc]\\s*){2}.*)")) {
 						tokens = linea.split(" ");
-						int ishower = nombresJugadores.indexOf(tokens[0].substring(0, tokens[0].length()-1));
+						int ishower = nombresJugadores.indexOf(tokens[parseaIndTokens(tokens)].substring(0, tokens[0].length()-1));
 						cartasJugadores.set(ishower, parseaCartasShower(linea, tokens));
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
 								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
@@ -311,14 +313,21 @@ public class LecturaEscritura {
 						cartasEnMesa.add(parseaCartaRiver(linea, tokens));
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
 								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
+					} else if (linea.matches("(\\** SHOW DOWN \\**)")) {
+						tokens = linea.split(" ");
+						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
+								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
 					} else if (linea.matches("(Uncalled bet \\(.*\\) returned to .*)")) {
 						tokens = linea.split(" ");
-						int iganador = nombresJugadores.indexOf(tokens[tokens.length - 1]);
+						int iganador = nombresJugadores.indexOf(parseaNombreUncalled(linea, tokens));
 						double collected = parseaUncalledBet(linea, tokens);
 						stacksJugadores.set(iganador, stacksJugadores.get(iganador) + collected);
+						apuestasJugadores.set(iganador, apuestasJugadores.get(iganador) - collected);
+						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
+								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
 					} else if (linea.matches("(.* collected .* from pot)")) {
 						tokens = linea.split(" ");
-						int iganador = nombresJugadores.indexOf(tokens[0]);
+						int iganador = nombresJugadores.indexOf(parseaNombreGanadorPot(linea, tokens));
 						double collected = parseaGanadoDelPot(linea, tokens);
 						stacksJugadores.set(iganador, stacksJugadores.get(iganador) + collected);
 						for (int i = 0; i < apuestasJugadores.size(); i++) {
@@ -340,6 +349,46 @@ public class LecturaEscritura {
 		}
 
 		return manos;
+	}
+
+	private static Object parseaNombreGanadorPot(String linea, String[] tokens) {
+		int ind = 0;
+		boolean finish = false;
+		while (!finish) {
+			if (tokens[ind].equals("collected")) {
+				finish = true;
+			}
+			ind++;
+		}
+
+		ind -= 1;
+
+		String nombre = "";
+
+		for (int i = 0; i < ind; i++ ){
+			nombre += tokens[i] + " ";
+		}
+
+		return nombre.trim();
+	}
+
+	private static String parseaNombreUncalled(String linea, String[] tokens) {
+		int ind = 0;
+		boolean finish = false;
+		while (!finish) {
+			if (tokens[ind].equals("to")) {
+				finish = true;
+			}
+			ind++;
+		}
+
+		String nombre = "";
+
+		for (int i = ind; i < tokens.length; i++ ){
+			nombre += tokens[i] + " ";
+		}
+
+		return nombre.trim();
 	}
 
 	private static AccionReproductor construyeAccion(String linea,
@@ -377,8 +426,19 @@ public class LecturaEscritura {
 
 	private static List<Carta> parseaCartasShower(String linea, String[] tokens) {
 		List<Carta> res = new ArrayList<>();
-		res.add(new Carta(tokens[2].substring(1, 3)));
-		res.add(new Carta(tokens[3].substring(0, 2)));
+
+		int ind = 0;
+		boolean finish = false;
+		while(!finish) {
+			if (tokens[ind].contains("[")) {
+				finish = true;
+			} else {
+				ind++;
+			}
+		}
+
+		res.add(new Carta(tokens[ind].substring(1, 3)));
+		res.add(new Carta(tokens[ind + 1].substring(0, 2)));
 		return res;
 	}
 
@@ -391,7 +451,7 @@ public class LecturaEscritura {
 	}
 
 	private static double parseaApuestaBet(String linea, String[] tokens) {
-		return Double.parseDouble(tokens[2].substring(3));
+		return round(Double.parseDouble(tokens[parseaIndTokens(tokens) + 2].substring(3)), 2);
 	}
 
 	private static List<Carta> parseaCartasFlop(String linea, String[] tokens) {
@@ -407,39 +467,73 @@ public class LecturaEscritura {
 	}
 
 	private static double parseaApuestaCall(String linea, String[] tokens) {
-		return Double.parseDouble(tokens[2].substring(3));
+		return round(Double.parseDouble(tokens[parseaIndTokens(tokens) + 2].substring(3)), 2);
 	}
 
 
 	private static List<Carta> parseaCartasHero(String linea, String[] tokens) {
 		List<Carta> res = new ArrayList<>(2);
-		res.add(new Carta(tokens[3].substring(1)));
-		res.add(new Carta(tokens[4].substring(0, 3)));
+
+		int ind = 0;
+		boolean finish = false;
+		while(!finish) {
+			if (tokens[ind].contains("[")) {
+				finish = true;
+			} else {
+				ind++;
+			}
+		}
+
+		res.add(new Carta(tokens[ind].substring(1)));
+		res.add(new Carta(tokens[ind +1].substring(0, 3)));
 		return res;
 	}
 
 	private static String parseaNombreHero(String linea, String[] tokens) {
-		return tokens[2];
+		String nombre = "";
+		boolean join = false;
+		for (String s : tokens) {
+
+			if (s.equals("to") && !join) {
+				join = true;
+			} else if (s.contains("[")){
+				join = false;
+			} else if (join) {
+				nombre += s;
+			}
+		}
+		return nombre;
 	}
 
 	private static double parseaCiegaGrande(String linea, String[] tokens) {
-		return Double.parseDouble(tokens[4].substring(3));
+		return round(Double.parseDouble(tokens[parseaIndTokens(tokens) + 4].substring(3)), 2);
 	}
 
 	private static double parseaUncalledBet(String linea, String[] tokens) {
-		return Double.parseDouble(tokens[2].substring(4, tokens[2].length() - 1));
+		return round(Double.parseDouble(tokens[2].substring(4, tokens[2].length() - 1)), 2);
 	}
 
 	private static double parseaCiegaPequena(String linea, String[] tokens) {
-		return Double.parseDouble(tokens[4].substring(3));
+		return round(Double.parseDouble(tokens[parseaIndTokens(tokens) + 4].substring(3)), 2);
 	}
 
 	private static double parseaStackJugador(String linea, String[] tokens) {
-		return Double.parseDouble(tokens[3].substring(4));
+		int ind = 0;
+		boolean finish = false;
+		while (ind < tokens.length-2 && !finish) {
+			if (tokens[ind].contains("(")) {
+				if (tokens[ind+1].equals("in") && tokens[ind+2].equals("chips)")) {
+					finish = true;
+				}
+			} else {
+				ind++;
+			}
+		}
+		return round(Double.parseDouble(tokens[ind].substring(4)), 2);
 	}
 
 	private static String parseaNombreJugador(String linea, String[] tokens) {
-		return tokens[2];
+		return linea.substring(linea.indexOf(":") + 2, linea.lastIndexOf("(") - 1);
 	}
 
 	private static int parseaSeatDelBoton(String linea) {
@@ -448,10 +542,47 @@ public class LecturaEscritura {
 	}
 
 	private static double parseaApuestaRaise(String linea, String[] tokens) {
-		return Double.parseDouble(tokens[tokens.length - 1].substring(3));
+		return round(Double.parseDouble(tokens[parseaIndTokens(tokens) + 4].substring(3)), 2);
 	}
 
 	private static double parseaGanadoDelPot(String linea, String[] tokens) {
-		return Double.parseDouble(tokens[2].substring(3));
+
+		int ind = 0;
+		boolean finish = false;
+		while (!finish) {
+			if (tokens[ind].equals("collected")) {
+				finish = true;
+			}
+			ind++;
+		}
+
+		return round(Double.parseDouble(tokens[ind].substring(3)), 2);
+	}
+
+	private static int parseaIndTokens(String[] tokens) {
+		int i = 0;
+		boolean finish = false;
+		while (!finish) {
+			if (tokens[i].substring(tokens[i].length() - 1).equals(":")) {
+				finish = true;
+			} else {
+				i++;
+			}
+		}
+
+		return i;
+	}
+
+	private static String pareseaNombreApuesta(String linea, String[] tokens) {
+		return (linea.substring(0, linea.indexOf(":")));
+	}
+
+
+	private static double round(double value, int places) {
+	    if (places < 0) throw new IllegalArgumentException();
+
+	    BigDecimal bd = new BigDecimal(value);
+	    bd = bd.setScale(places, RoundingMode.HALF_UP);
+	    return bd.doubleValue();
 	}
 }

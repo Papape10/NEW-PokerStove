@@ -1,7 +1,6 @@
 package prod.modelo.reproductor;
 
 import prod.modelo.excepciones.EReproductor;
-import prod.modelo.reproductor.acciones.I_AccionReproductor;
 import prod.modelo.util.LecturaEscritura;
 
 import java.io.File;
@@ -10,7 +9,6 @@ import java.util.Stack;
 
 public class Reproductor {
 
-    private List<I_AccionReproductor> acciones;
     private int indiceAccion;
     private List<ManoReproductor> manos;
     private int indiceMano;
@@ -20,7 +18,6 @@ public class Reproductor {
      */
     public Reproductor() {
         iniciaIndices();
-        acciones = new Stack<>();
         manos = new Stack<>();
     }
 
@@ -30,7 +27,6 @@ public class Reproductor {
      */
     public Reproductor(File archivo) {
         iniciaIndices();
-        acciones = new Stack<>();
         manos = LecturaEscritura.leeArchivoPokerStars(archivo);
     }
 
@@ -51,7 +47,7 @@ public class Reproductor {
     }
 
     public boolean puedeAvanzarAccion() {
-        return (indiceAccion < (acciones.size()-1));
+        return (indiceAccion < (manos.get(indiceMano).getAcciones().size()-1));
     }
 
     public boolean puedeRetrocederAccion() {
@@ -61,6 +57,7 @@ public class Reproductor {
     public void avanzaMano() {
         if (puedeAvanzarMano()) {
             indiceMano++;
+            indiceAccion = 0;
         } else {
             throw new EReproductor("No hay mas manos en el archivo");
         }
@@ -69,6 +66,7 @@ public class Reproductor {
     public void retrocedeMano() {
         if (puedeRetrocederMano()) {
             indiceMano--;
+            indiceAccion = 0;
         } else {
             throw new EReproductor("No se puede retroceder mas manos");
         }
@@ -83,11 +81,11 @@ public class Reproductor {
     }
 
     public EstadoMesa getEstadoActual() {
-        return acciones.get(this.indiceAccion).getEstado();
+        return manos.get(indiceMano).getAcciones().get(this.indiceAccion).getEstado();
     }
 
     public String getNombreAccionActual() {
-        return acciones.get(this.indiceAccion).getNombreAccion();
+        return manos.get(indiceMano).getAcciones().get(this.indiceAccion).getNombreAccion();
     }
 
     private void iniciaIndices() {

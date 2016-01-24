@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import prod.baraja.Carta;
+import prod.controlador.Controlador;
 import prod.controlador.ResultadoSimulacion;
 import prod.modelo.rangos.RangoSoloLectura;
 import prod.modelo.reproductor.EstadoJugador;
@@ -60,7 +62,10 @@ public class PanelDerechoReproductor extends JPanel implements I_Observador {
 	
 	
     // Constructor
-    public PanelDerechoReproductor() {
+    public PanelDerechoReproductor(Controlador controlador) {
+    	
+    	controlador.addObservador(this);
+    	
     	this.setPreferredSize(new Dimension(1000, 600));
     	setLayout(null);
     	this.setBackground(Color.BLACK);
@@ -68,7 +73,7 @@ public class PanelDerechoReproductor extends JPanel implements I_Observador {
     	textoResultado = new JTextArea("");
     	textoResultado.setEditable(false);
     	textoResultado.setBackground(Color.lightGray);
-    	textoResultado.setFont(new java.awt.Font("Tahoma", 0, 17)); 
+    	textoResultado.setFont(new java.awt.Font("Tahoma", 0, 13)); 
     	
     	
         // PRUEBAS
@@ -95,11 +100,11 @@ public class PanelDerechoReproductor extends JPanel implements I_Observador {
         cartasJug2.add(carta3);
         cartasJug2.add(carta4);
         EstadoJugador jug1 = new EstadoJugador("Pepe", cartasJug1, 1000, 150, false, true);
-        EstadoJugador jug2 = new EstadoJugador("Juan", cartasJug2, 2000, 300, false, false);
-        EstadoJugador jug3 = new EstadoJugador("Pepe", cartasJug1, 1000, 150, false, false);
-        EstadoJugador jug4 = new EstadoJugador("Juan", cartasJug2, 2000, 300, false, false);
-        EstadoJugador jug5 = new EstadoJugador("Pepe", cartasJug1, 1000, 150, false, false);
-        EstadoJugador jug6 = new EstadoJugador("Juan", cartasJug2, 2000, 300, false, false);
+        EstadoJugador jug2 = new EstadoJugador("Juan", cartasJug2, 2000, 300, false, true);
+        EstadoJugador jug3 = new EstadoJugador("Pepe", cartasJug1, 1000, 150, false, true);
+        EstadoJugador jug4 = new EstadoJugador("Juan", cartasJug2, 2000, 300, false, true);
+        EstadoJugador jug5 = new EstadoJugador("Pepe", cartasJug1, 1000, 150, false, true);
+        EstadoJugador jug6 = new EstadoJugador("Juan", cartasJug2, 2000, 300, false, true);
         jugadores.add(jug1);
         jugadores.add(jug2);
         jugadores.add(jug3);
@@ -137,13 +142,13 @@ public class PanelDerechoReproductor extends JPanel implements I_Observador {
 		// Actualizar JTextArea con la nueva accion
 		JScrollPane scrollPane = new JScrollPane(textoResultado);
     	scrollPane.setBounds(330, 30, 350, 175);
-    	textoResultado.setText(" " + nombreAccion + "\n " + textoResultado.getText());
+    	textoResultado.append("\n " + nombreAccion.replaceAll("â‚¬", "€"));
         add(scrollPane);
         
         // Bote
-        JLabel labelPot = new JLabel(" Pot: €" + String.valueOf(nuevoEstado.getPot()) + " ");
+        JLabel labelPot = new JLabel(" Pot: €" + new BigDecimal(nuevoEstado.getPot()).setScale(2, BigDecimal.ROUND_HALF_UP) + " ");
         labelPot.setOpaque(true);
-        labelPot.setBackground(Color.lightGray);
+        labelPot.setBackground(Color.CYAN);
         labelPot.setBorder(BorderFactory.createLineBorder(Color.black));
         labelPot.setBounds(457, 220, 100, 30);
         add(labelPot);
@@ -180,7 +185,7 @@ public class PanelDerechoReproductor extends JPanel implements I_Observador {
     		j = listaJugadores.get(0);
     		
     		// Nombre del jugador y Stack
-    		JLabel label = new JLabel(" " + j.getNombre() + " [€" + String.valueOf(j.getStack()) + "] ");
+    		JLabel label = new JLabel(" " + j.getNombre() + " [€" + new BigDecimal(j.getStack()).setScale(2, BigDecimal.ROUND_HALF_UP) + "] ");
     		label.setOpaque(true);
     		label.setBackground(Color.lightGray);
     		label.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -194,10 +199,19 @@ public class PanelDerechoReproductor extends JPanel implements I_Observador {
             	labelDealer.setOpaque(true);
             	labelDealer.setBackground(Color.PINK);
             	labelDealer.setBorder(BorderFactory.createLineBorder(Color.black));
-            	labelDealer.setBounds(785, 165, 30, 30);
+            	labelDealer.setBounds(790, 165, 30, 30);
                 add(labelDealer);
             }
-            
+	  	    
+	  	    // Apuesta
+    		if (j.getBet() > 0) {
+    			JLabel labelApuesta = new JLabel(" €" + new BigDecimal(j.getBet()).setScale(2, BigDecimal.ROUND_HALF_UP) + " ");
+    			labelApuesta.setOpaque(true);
+    			labelApuesta.setBackground(Color.orange);
+    			labelApuesta.setBorder(BorderFactory.createLineBorder(Color.black));
+    			labelApuesta.setBounds(715, 185, 60, 30);
+                add(labelApuesta);
+    		}
            
     		if (!j.hasFolded()) {
     			
@@ -208,20 +222,10 @@ public class PanelDerechoReproductor extends JPanel implements I_Observador {
     			}
 	    		else {
 	    			carta1Jug1 = creaJLabelConImagen("black_joker", 720, 65, anchoCartaJug, altoCartaJug);
-	    			carta2Jug1 = creaJLabelConImagen("black_joker", 720, 65, anchoCartaJug, altoCartaJug);
+	    			carta2Jug1 = creaJLabelConImagen("black_joker", 720+this.anchoCartaJug+2, 65, anchoCartaJug, altoCartaJug);
 	    		}
 	    		add(carta1Jug1);
 		  	    add(carta2Jug1);
-		  	    
-		  	    // Apuesta
-	    		if (j.getBet() > 0) {
-	    			JLabel labelApuesta = new JLabel(" €" + String.valueOf(j.getBet()) + " ");
-	    			labelApuesta.setOpaque(true);
-	    			labelApuesta.setBackground(Color.lightGray);
-	    			labelApuesta.setBorder(BorderFactory.createLineBorder(Color.black));
-	    			labelApuesta.setBounds(700, 170, 60, 30);
-	                add(labelApuesta);
-	    		}
     		}
             
     		
@@ -229,14 +233,38 @@ public class PanelDerechoReproductor extends JPanel implements I_Observador {
     	if (numJugadores > 1) {
     		j = listaJugadores.get(1);
     		
-    		JLabel label = new JLabel(" " + j.getNombre() + " [€" + String.valueOf(j.getStack()) + "] ");
+    		// Nombre del jugador y Stack
+    		JLabel label = new JLabel(" " + j.getNombre() + " [€" + new BigDecimal(j.getStack()).setScale(2, BigDecimal.ROUND_HALF_UP) + "] ");
     		label.setOpaque(true);
     		label.setBackground(Color.lightGray);
     		label.setBorder(BorderFactory.createLineBorder(Color.black));
     		label.setBounds(850, 178, 122, 30);
             add(label);
             
+            // Ficha de dealer
+            if (j.isButton()) {
+            	JLabel labelDealer = new JLabel(" D ");
+            	labelDealer.setFont(new java.awt.Font("Tahoma", 0, 20)); 
+            	labelDealer.setOpaque(true);
+            	labelDealer.setBackground(Color.PINK);
+            	labelDealer.setBorder(BorderFactory.createLineBorder(Color.black));
+            	labelDealer.setBounds(810, 220, 30, 30);
+                add(labelDealer);
+            }
+            
+            // Apuesta
+    		if (j.getBet() > 0) {
+    			JLabel labelApuesta = new JLabel(" €" + new BigDecimal(j.getBet()).setScale(2, BigDecimal.ROUND_HALF_UP) + " ");
+    			labelApuesta.setOpaque(true);
+    			labelApuesta.setBackground(Color.orange);
+    			labelApuesta.setBorder(BorderFactory.createLineBorder(Color.black));
+    			labelApuesta.setBounds(775, 255, 60, 30);
+                add(labelApuesta);
+    		}
+            
     		if (!j.hasFolded()) {
+    			
+    			// Cartas
     			if (j.getCartas() != null) {
 		    	    carta1Jug2 = creaJLabelConImagen(j.getCartas().get(0).toString(), 850, 215, anchoCartaJug, altoCartaJug);
 		    	    carta2Jug2 = creaJLabelConImagen(j.getCartas().get(1).toString(), 850+this.anchoCartaJug+2,215, anchoCartaJug, altoCartaJug);
@@ -248,20 +276,42 @@ public class PanelDerechoReproductor extends JPanel implements I_Observador {
     			add(carta1Jug2);
 		    	add(carta2Jug2);
     		}
-    		
-            
-    		if (j.getBet() > 0) {
-    			JLabel labelApuesta = new JLabel(" €" + String.valueOf(j.getBet()) + " ");
-    			labelApuesta.setOpaque(true);
-    			labelApuesta.setBackground(Color.lightGray);
-    			labelApuesta.setBorder(BorderFactory.createLineBorder(Color.black));
-    			labelApuesta.setBounds(780, 245, 60, 30);
-                add(labelApuesta);
-    		}
     	}
     	if (numJugadores > 2) {
     		j = listaJugadores.get(2);
+    		
+    		// Nombre del jugador y Stack
+    		JLabel label = new JLabel(" " + j.getNombre() + " [€" + new BigDecimal(j.getStack()).setScale(2, BigDecimal.ROUND_HALF_UP) + "] ");
+    		label.setOpaque(true);
+    		label.setBackground(Color.lightGray);
+    		label.setBorder(BorderFactory.createLineBorder(Color.black));
+    		label.setBounds(850, 338, 122, 30);
+            add(label);
+            
+            // Ficha de dealer
+            if (j.isButton()) {
+            	JLabel labelDealer = new JLabel(" D ");
+            	labelDealer.setFont(new java.awt.Font("Tahoma", 0, 20)); 
+            	labelDealer.setOpaque(true);
+            	labelDealer.setBackground(Color.PINK);
+            	labelDealer.setBorder(BorderFactory.createLineBorder(Color.black));
+            	labelDealer.setBounds(810, 425, 30, 30);
+                add(labelDealer);
+            }
+            
+            // Apuesta
+    		if (j.getBet() > 0) {
+    			JLabel labelApuesta = new JLabel(" €" + new BigDecimal(j.getBet()).setScale(2, BigDecimal.ROUND_HALF_UP) + " ");
+    			labelApuesta.setOpaque(true);
+    			labelApuesta.setBackground(Color.orange);
+    			labelApuesta.setBorder(BorderFactory.createLineBorder(Color.black));
+    			labelApuesta.setBounds(775, 385, 60, 30);
+                add(labelApuesta);
+    		}
+            
     		if (!j.hasFolded()) {
+    			
+    			// Cartas
     			if (j.getCartas() != null) {
 		            carta1Jug3= creaJLabelConImagen(j.getCartas().get(0).toString(), 850, 375, anchoCartaJug, altoCartaJug);
 		            carta2Jug3 = creaJLabelConImagen(j.getCartas().get(1).toString(), 850+this.anchoCartaJug+2,375, anchoCartaJug, altoCartaJug);

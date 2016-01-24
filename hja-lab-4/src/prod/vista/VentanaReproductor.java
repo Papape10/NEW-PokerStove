@@ -19,7 +19,7 @@ public class VentanaReproductor extends JFrame {
         this.getContentPane().setLayout(new BorderLayout());
               
         panelIzquierdoReproductor = new PanelIzquierdoReproductor(ctrl);
-        panelDerechoReproductor = new PanelDerechoReproductor();
+        panelDerechoReproductor = new PanelDerechoReproductor(ctrl);
         add(panelIzquierdoReproductor, BorderLayout.WEST);
         add(panelDerechoReproductor, BorderLayout.CENTER);
         

@@ -45,6 +45,7 @@ public class PanelReproductor extends JPanel {
             	JFileChooser fc=new JFileChooser();
             	JPanel contentPane = new JPanel();
             	
+            	fc.setCurrentDirectory(new File("src/archivos/manos/"));
             	fc.setDialogTitle("Selecciona el archivo de PokerStars");
             	fc.setFileFilter(new FileNameExtensionFilter("Documento de texto (.txt)", "txt"));
 

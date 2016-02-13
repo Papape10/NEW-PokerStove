@@ -260,9 +260,9 @@ public class LecturaEscritura {
 						tokens = linea.split(" ");
 						int iraiser = nombresJugadores.indexOf(pareseaNombreApuesta(linea, tokens));
 						double apuesta = parseaApuestaRaise(linea, tokens);
+						pot += apuesta  - apuestasJugadores.get(iraiser);
 						stacksJugadores.set(iraiser, stacksJugadores.get(iraiser) - (apuesta - apuestasJugadores.get(iraiser)));
 						apuestasJugadores.set(iraiser, apuesta);
-						pot += apuesta;
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
 								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
 					} else if (linea.matches("(.*: folds .*)")) {
@@ -306,15 +306,24 @@ public class LecturaEscritura {
 					} else if (linea.matches("(\\** TURN \\** .([AKQJT2-9][hcsd]\\s*)*.\\s.([AKQJT2-9][hcsd])*.)")) {
 						tokens = linea.split(" ");
 						cartasEnMesa.add(parseaCartaTurn(linea, tokens));
+						for (int i = 0; i < apuestasJugadores.size(); i++) {
+							apuestasJugadores.set(i, 0.0);
+						}
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
 								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
 					} else if (linea.matches("(\\** RIVER \\** .([AKQJT2-9][hcsd]\\s*)*.\\s.([AKQJT2-9][hcsd])*.)")) {
 						tokens = linea.split(" ");
 						cartasEnMesa.add(parseaCartaRiver(linea, tokens));
+						for (int i = 0; i < apuestasJugadores.size(); i++) {
+							apuestasJugadores.set(i, 0.0);
+						}
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
 								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
 					} else if (linea.matches("(\\** SHOW DOWN \\**)")) {
 						tokens = linea.split(" ");
+						for (int i = 0; i < apuestasJugadores.size(); i++) {
+							apuestasJugadores.set(i, 0.0);
+						}
 						acciones.add(construyeAccion(linea, pot, cartasEnMesa, nombresJugadores, stacksJugadores,
 								apuestasJugadores, hasFolded, indiceDelBoton, nombreHero, cartasHero, cartasJugadores));
 					} else if (linea.matches("(Uncalled bet \\(.*\\) returned to .*)")) {
